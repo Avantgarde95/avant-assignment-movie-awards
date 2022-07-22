@@ -1,21 +1,21 @@
 import React from "react";
+import styled from "@emotion/styled";
+import { Global } from "@emotion/react";
 
-import './App.css';
-import Ballot from './Components/Ballot/Ballot';
+import Ballot from "Templates/Ballot";
+import Header from "Templates/Header";
+import { globalStyle } from "Styles/Global";
 
-function App() {
-  // Feel free to remove the contents of the header tag to make more room for your code
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={'https://www.dailypay.com/wp-content/uploads/DailyPay-Logo-White.svg'} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-      </header>
-      <Ballot />
-    </div>
-  );
-}
+const App = () => (
+  <Container>
+    <Global styles={globalStyle} />
+    <Header />
+  </Container>
+);
+
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+`;
 
 export default App;
