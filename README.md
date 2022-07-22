@@ -1,14 +1,26 @@
-# DailyPay Front End Engineering Challenge
+### What I did
 
-My implementation
+- Enable TypeScript and Emotion
+- Implement whole UI
+- Select movies
+- Show the selected movies on the modal
+- Responsive layout
+
+### Screenshots
+
+On large screen
 
 ![Screenshot1](Screenshot1.png)
 
 ![Screenshot2](Screenshot2.png)
 
+On small screen
+
 ![Screenshot3](Screenshot3.png)
 
 ---
+
+# DailyPay Front End Engineering Challenge
 
 Welcome Candidate and thank you for taking the time to complete the DailyPay take-home challenge for our senior frontend engineer position
 
