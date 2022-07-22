@@ -6,17 +6,20 @@
 - Show the selected movies on the modal
 - Responsive layout
 
-### Screenshots
+### Results
 
-On large screen
+![Result](Result.gif)
+
+<details>
+<summary>Screenshots</summary>
 
 ![Screenshot1](Screenshot1.png)
 
 ![Screenshot2](Screenshot2.png)
 
-On small screen
-
 ![Screenshot3](Screenshot3.png)
+
+</details>
 
 ---
 

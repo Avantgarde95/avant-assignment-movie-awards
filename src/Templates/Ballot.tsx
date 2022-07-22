@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { css, keyframes } from "@emotion/react";
 
 import api from "Api/Api";
-import { onWideScreen } from "Styles/Mixins";
+import { onVeryWideScreen, onWideScreen } from "Styles/Mixins";
 
 interface Category {
   id: string;
@@ -169,8 +169,12 @@ const MovieTable = styled.div`
   ${onWideScreen} {
     overflow-x: visible;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-around;
     gap: 0;
+  }
+
+  ${onVeryWideScreen} {
+    justify-content: space-between;
   }
 `;
 
