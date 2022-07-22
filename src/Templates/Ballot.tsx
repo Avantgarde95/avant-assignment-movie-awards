@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { css } from "@emotion/react";
+import { css, keyframes } from "@emotion/react";
 
 import api from "Api/Api";
+import { onWideScreen } from "Styles/Mixins";
 
 interface Category {
   id: string;
-  items: Array<Movie>;
+  movies: Array<Movie>;
+
+  // Added for displaying.
+  title: string;
 
   // Added for selection.
-  selectedMovieID: string | null;
+  selectedMovie: Movie | null;
 }
 
 interface Movie {
@@ -21,6 +25,7 @@ interface Movie {
 const Ballot = () => {
   // Key = category id, Value = category.
   const [categoryMap, setCategoryMap] = useState<Record<string, Category>>({});
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -31,8 +36,10 @@ const Ballot = () => {
           ballotData.items.map(categoryData => [
             categoryData.id,
             {
-              ...categoryData,
-              selectedMovieID: null,
+              id: categoryData.id,
+              movies: categoryData.items,
+              title: upperFirstLetter(categoryData.id.split("-").join(" ")),
+              selectedMovie: null,
             },
           ])
         )
@@ -40,16 +47,24 @@ const Ballot = () => {
     })();
   }, [setCategoryMap]);
 
-  function handleClickSelect(categoryID: string, movieID: string) {
+  function handleClickSelect(categoryID: string, movie: Movie) {
     const category = categoryMap[categoryID];
 
     setCategoryMap({
       ...categoryMap,
       [categoryID]: {
         ...category,
-        selectedMovieID: category.selectedMovieID === movieID ? null : movieID,
+        selectedMovie: category.selectedMovie?.id === movie.id ? null : movie,
       },
     });
+  }
+
+  function handleClickSubmit() {
+    setModalOpen(true);
+  }
+
+  function handleClickModalClose() {
+    setModalOpen(false);
   }
 
   return (
@@ -57,32 +72,53 @@ const Ballot = () => {
       <Content>
         {Object.values(categoryMap).map(category => (
           <CategoryView key={category.id}>
-            <CategoryTitle>{category.id}</CategoryTitle>
+            <CategoryTitle>{category.title}</CategoryTitle>
             <MovieTable>
-              {category.items.map(movie => (
-                <MovieCard key={movie.id} isSelected={movie.id === category.selectedMovieID}>
+              {category.movies.map(movie => (
+                <MovieCard key={movie.id} isSelected={movie.id === category.selectedMovie?.id}>
                   <MovieTitle>{movie.title}</MovieTitle>
                   <MovieImage src={movie.photoUrL} alt={movie.title} />
                   <MovieSelectButton
                     onClick={() => {
-                      handleClickSelect(category.id, movie.id);
+                      handleClickSelect(category.id, movie);
                     }}
                   >
                     Select
                   </MovieSelectButton>
                 </MovieCard>
               ))}
-              {category.items.map(movie => (
+              {category.movies.map(movie => (
                 <FakeCard key={movie.id} />
               ))}
             </MovieTable>
           </CategoryView>
         ))}
       </Content>
-      <SubmitButton>Submit ballot</SubmitButton>
+      <SubmitButton onClick={handleClickSubmit}>Submit ballot</SubmitButton>
+      {isModalOpen && (
+        <Backdrop>
+          <Modal>
+            <ModalContent>
+              Submitted!
+              <br />
+              <br />
+              {Object.values(categoryMap).map(category => (
+                <div key={category.id}>
+                  {category.title}: {category.selectedMovie?.title ?? "None!"}
+                </div>
+              ))}
+            </ModalContent>
+            <ModalCloseButton onClick={handleClickModalClose}>Close</ModalCloseButton>
+          </Modal>
+        </Backdrop>
+      )}
     </Container>
   );
 };
+
+function upperFirstLetter(value: string) {
+  return value[0].toUpperCase() + value.slice(1);
+}
 
 const Container = styled.main`
   box-sizing: border-box;
@@ -123,15 +159,24 @@ const CategoryTitle = styled.div`
 `;
 
 const MovieTable = styled.div`
+  overflow-x: auto;
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
 
   width: 100%;
+  gap: 1rem;
+
+  ${onWideScreen} {
+    overflow-x: visible;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0;
+  }
 `;
 
 const cardStyle = css`
+  flex-shrink: 0;
+
   width: 20rem;
 `;
 
@@ -160,6 +205,12 @@ const MovieCard = styled.div<MovieCardProps>`
 // Invisible card for aligning cards left.
 const FakeCard = styled.div`
   ${cardStyle}
+
+  display: none;
+
+  ${onWideScreen} {
+    display: block;
+  }
 `;
 
 const MovieTitle = styled.div`
@@ -210,6 +261,76 @@ const SubmitButton = styled.button`
   border: 0;
   border-top: 2px solid ${({ theme }) => theme.color.fontColor};
   color: inherit;
+  background-color: ${({ theme }) => theme.color.submitBackgroundColor};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.color.hoveredSubmitBackgroundColor};
+  }
+`;
+
+const fadeInAnimation = keyframes`
+  100% {
+    opacity: 1;
+  }
+`;
+
+const Backdrop = styled.div`
+  position: fixed;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+
+  background-color: #444444cc;
+
+  opacity: 0;
+  animation: ${fadeInAnimation} 0.5s forwards;
+`;
+
+const Modal = styled.div`
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+
+  width: 40rem;
+  max-width: 100%;
+  height: 30rem;
+  padding: 1rem;
+
+  background-color: #ffffff;
+`;
+
+const ModalContent = styled.div`
+  overflow-y: auto;
+
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  font-size: 1.5rem;
+
+  color: #000000;
+`;
+
+const ModalCloseButton = styled.button`
+  cursor: pointer;
+  box-sizing: border-box;
+
+  font-family: inherit;
+  font-size: 2rem;
+
+  width: 100%;
+  margin-top: auto;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-top: 2px solid ${({ theme }) => theme.color.fontColor};
+  color: ${({ theme }) => theme.color.fontColor};
   background-color: ${({ theme }) => theme.color.submitBackgroundColor};
 
   &:hover {
