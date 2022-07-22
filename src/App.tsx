@@ -1,3 +1,5 @@
+import React from "react";
+
 import './App.css';
 import Ballot from './Components/Ballot/Ballot';
 
