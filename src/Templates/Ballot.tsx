@@ -47,7 +47,7 @@ const Ballot = () => {
     })();
   }, [setCategoryMap]);
 
-  function handleClickSelect(categoryID: string, movie: Movie) {
+  const handleClickSelect = (categoryID: string, movie: Movie) => {
     const category = categoryMap[categoryID];
 
     setCategoryMap({
@@ -57,15 +57,15 @@ const Ballot = () => {
         selectedMovie: category.selectedMovie?.id === movie.id ? null : movie,
       },
     });
-  }
+  };
 
-  function handleClickSubmit() {
+  const handleClickSubmit = () => {
     setModalOpen(true);
-  }
+  };
 
-  function handleClickModalClose() {
+  const handleClickModalClose = () => {
     setModalOpen(false);
-  }
+  };
 
   return (
     <Container>
